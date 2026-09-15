@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
+  <meta name="theme-color" content="#0b1821" />
+  <title>플래닛 버스 노선 챌린지</title>
+  <meta name="description" content="30초 안에 버스 정류장을 맞히고 실시간 랭킹에 도전하는 모바일 미니게임" />
+  <link rel="stylesheet" href="./styles.css?v=150" />
+</head>
+<body>
+<main id="app">
+  <section class="screen active intro-screen" id="screen-main">
+    <div class="intro-inner">
+      <p class="eyebrow">PLANET BUS CHALLENGE</p>
+      <h1>30초<br><em>버스 노선 챌린지</em></h1>
+      <p class="intro-copy">달리는 버스에서 다음 정류장을 맞히고<br>종점까지 도착해보세요.</p>
+      <div class="hero-visual"><img src="./images/hero-bus-routes.png" alt="버스 노선 챌린지 대표 이미지"></div>
+      <button class="button primary" id="route-select-btn" type="button">노선 선택하기</button>
+    </div>
+    <footer class="notice intro-notice"><b>유의사항</b><ul>
+      <li>게임은 1회 최대 30초 동안 진행됩니다.</li>
+      <li>정류장 플래카드가 지나가기 전에 정답을 선택해 주세요.</li>
+      <li>오답 선택지는 사라지고, 제한 위치까지 정답을 못 맞히면 버스가 멈춥니다.</li>
+      <li>게임 종료 후 광고를 보면 점수와 실시간 순위를 확인할 수 있습니다.</li>
+      <li>게임 기회를 모두 사용하면 광고를 보고 추가 기회를 받을 수 있습니다.</li>
+      <li>결과 공유 완료 시 1P가 지급되며 동일인 중복 지급은 제한될 수 있습니다.</li>
+      <li>포인트는 OK캐쉬백 앱에서 받을 수 있습니다.</li>
+    </ul></footer>
+  </section>
+
+  <section class="screen route-screen" id="screen-route">
+    <div class="route-inner">
+      <div class="route-title-row"><div><p class="eyebrow">CHOOSE YOUR BUS</p><h2>오늘 탈 노선을<br>골라주세요</h2></div><span class="sec-badge">30 SEC</span></div>
+      <p class="route-lead">노선을 먼저 확인하고 외운 뒤<br>바로 운행을 시작합니다.</p>
+
+      <div id="route-tabs" class="route-tabs" aria-label="노선 선택"></div>
+      <section class="route-card">
+        <div class="route-card-head"><div><small id="route-type">직행좌석</small><strong id="route-number">9007</strong></div><p><b id="route-origin"></b><span>→</span><em>SK플래닛</em><span>→</span><b id="route-destination"></b></p></div>
+        <div class="memory-tip"><b>노선을 외워보세요</b><span>출발·SK플래닛·도착 포함 11개 지점</span></div>
+        <div class="route-map-wrap"><div class="route-map-grid"></div><svg id="route-map-line" class="route-map-line" viewBox="0 0 320 430" preserveAspectRatio="none"></svg><ol id="route-stops" class="route-stops"></ol><span class="map-note">노선도 · 실제 지도 축척과 무관</span></div>
+      </section>
+
+      <section class="howto">
+        <h2>게임 방법</h2>
+        <div class="howto-grid">
+          <div><i>1</i><b>노선을<br>먼저 외워요</b><span>출발지부터 종점까지<br>정류장 순서를 확인해요.</span></div>
+          <div><i>2</i><b>달리면서<br>정류장을 골라요</b><span>플래카드가 지나가기 전<br>3개 중 정답을 선택해요.</span></div>
+          <div><i>3</i><b>30초 안에<br>종점에 도착해요</b><span>게임 종료 후 광고를 보면<br>점수와 순위를 확인해요.</span></div>
+        </div>
+      </section>
+
+      <button id="ranking-card" class="ranking-card" type="button" disabled>
+        <span>🏆</span><div><small>실시간 랭킹</small><strong id="main-rank">순위 확인 중</strong></div><b>전체 보기 ›</b>
+      </button>
+
+      <div class="main-actions">
+        <span class="chance" id="main-chance">참여 기회 확인 중</span>
+        <button class="button primary" id="start-btn" disabled>운행 시작</button>
+        <button class="button secondary hidden" id="ad-main-btn">광고 보고 1번 더</button>
+        <button class="text-button" id="intro-back-btn">처음으로</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen" id="screen-play">
+    <header class="play-head"><div><b id="game-bus-number">9007</b><span id="game-direction">서울역행</span></div><div><small id="game-progress">1 / 8</small><strong id="timer">30.0</strong></div></header>
+    <div class="progress"><i id="progress-bar"></i></div>
+    <section id="driver-view" class="driver-view driving">
+      <div id="checkpoint" class="checkpoint"><div class="checkpoint-banner"><small>NEXT STOP</small><strong id="flag-name">?</strong></div></div>
+      <div class="steering-motion" aria-hidden="true"></div>
+      <div id="drive-message" class="drive-message"><small>NEXT STOP</small><strong id="drive-status">출발합니다</strong></div>
+      <div id="warning" class="warning-panel" role="alert"><strong>꽝!</strong><span>다시 골라주세요</span></div>
+      <div id="choice-panel" class="dashboard-choices hidden"><div class="dashboard-label"><span>이 정류장 이름은?</span><b id="choice-remaining">3개 선택 가능</b></div><div id="choices" class="choices"></div></div>
+    </section>
+  </section>
+
+  <section class="screen" id="screen-ad"><div class="ad-card"><div class="bus-loader">🚌</div><h2>운행 기록 저장 중…</h2><p>광고 후 점수와 실시간 순위를 확인해요.</p><div class="loading"><i></i></div></div></section>
+
+  <section class="screen" id="screen-result">
+    <div class="result-inner">
+      <p class="eyebrow" id="result-label">DRIVE REPORT</p><h2 id="result-title">서울역 도착!</h2>
+      <div class="total"><strong id="result-score">0</strong><span>점</span></div>
+      <p class="result-comment" id="result-message"></p>
+      <section class="result-ranking"><span>내 최고점 실시간 순위</span><strong id="result-rank">순위 집계 중</strong></section>
+      <section class="record-grid"><div><span>통과</span><b id="result-correct">0 / 8</b></div><div><span>오답</span><b id="result-wrong">0회</b></div><div><span>운행 시간</span><b id="result-time">30.0초</b></div></section>
+      <button class="button point hidden" id="clear-point-btn">완주 1P 받기</button>
+      <button class="button primary share-button" id="share-btn">결과 공유하고 1P 받기</button>
+      <button class="button secondary hidden" id="ad-result-btn">광고 보고 1번 더</button>
+      <button class="button secondary" id="retry-btn">한 번 더 운행하기</button>
+      <button class="text-button" id="home-btn">다른 노선 선택</button>
+    </div>
+  </section>
+</main>
+
+<div id="ranking-modal" class="modal hidden" aria-hidden="true"><section class="modal-card" tabindex="-1"><button id="ranking-close" class="modal-close" type="button">×</button><p class="eyebrow">LIVE RANKING</p><h2>실시간 랭킹</h2><p id="ranking-period">현재 순위를 확인하고 있어요</p><ol id="ranking-list" class="ranking-list"></ol><p id="ranking-status" class="ranking-status">불러오는 중…</p></section></div>
+<canvas id="share-canvas" width="800" height="800" class="share-canvas" aria-hidden="true"></canvas>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script>
+window.__OGOGBridgeMockConfig={
+  bridgeVersion:"1.0.0",
+  allowFunctions:["login.check","login.request","participation.getState","participation.getExtraChance","execution.report","ranking.getMyRank","ranking.getTopRanks","reward.claim","reward.getPointStatus","ad.getStatus","ad.show","ad.complete","share.captureAndUploadImage","share.requestKakao","share.complete","ui.toast"],
+  profile:{isLogin:true,channel:"APP",baseRemainingCount:4,extraRemainingCount:0,playable:true,bestScore:0},
+  ranking:{enabled:true,score:8420,rank:128,participantCount:4217,provisional:true,periodName:"이번 주 버스 랭킹",items:[{nickname:"판교버스왕",score:10840,rank:1,mine:false},{nickname:"노선암기왕",score:10420,rank:2,mine:false},{nickname:"정류장마스터",score:9980,rank:3,mine:false},{nickname:"나의 기록",score:8420,rank:128,mine:true}]},
+  rankingPolicy:{schemaVersion:"2.0",enabled:true,scope:"EVENT_BEST_SCORE",tiePolicy:"RANK",provisional:true,loginRequiredForRanking:true},
+  adExtra:{schemaVersion:"1.0",placements:[{placementId:"planet-bus-result-interstitial",placementName:"결과 전면광고",placementType:"INTERSTITIAL",web:{enabled:true,provider:"GOOGLE",adUnitId:"planet-bus-result"},app:{enabled:true,provider:"APP_INVENTORY",inventoryId:"planet-bus-result"}},{placementId:"planet-bus-extra-play",placementName:"추가 기회 광고",placementType:"INTERSTITIAL",web:{enabled:true,provider:"GOOGLE",adUnitId:"planet-bus-extra"},app:{enabled:true,provider:"APP_INVENTORY",inventoryId:"planet-bus-extra"}}]},
+  flowPolicy:{schemaVersion:"1.0",flows:[{flowId:"planet-bus-clear-point",actionType:"COMPLETE",benefits:[{benefitId:"planet-bus-clear-1p"}]},{flowId:"planet-bus-share-point",actionType:"SHARE_COMPLETED",benefits:[{benefitId:"planet-bus-share-1p"}]},{flowId:"planet-bus-ad-extra",actionType:"AD_COMPLETE",actionConfig:{adPlacementIds:["planet-bus-extra-play"]},benefits:[{benefitId:"planet-bus-ad-extra"}]}]},
+  benefitPolicies:[{benefitId:"planet-bus-clear-1p",benefitType:"POINT",conditionType:"RESULT_CODE",conditionJson:{resultCodes:["CLEAR_30SEC"]},benefitTitle:"30초 완주 1P",benefitConfigJson:{rewardType:"webapp_game_save",amount:1,popupRequiredYn:"N",claimRequiredYn:"Y",issueLimitType:"USER_TOTAL",issueLimitCount:100}},{benefitId:"planet-bus-share-1p",benefitType:"POINT",conditionType:"ALWAYS",conditionJson:{},benefitTitle:"버스 결과 공유 1P",benefitConfigJson:{rewardType:"webapp_game_save",amount:1,popupRequiredYn:"N",claimRequiredYn:"N",issueLimitType:"USER_TOTAL",issueLimitCount:1}},{benefitId:"planet-bus-ad-extra",benefitType:"EXTRA_PLAY",conditionType:"ALWAYS",conditionJson:{},benefitTitle:"광고 시청 추가 기회",benefitConfigJson:{count:1}}]
+};
+</script>
+<script src="https://dev.ogog.kr/resources/js/ogogbridge/ogogbridge-1.0.0.mock.js" data-ogog-bridge-mock="true"></script>
+<script src="./app.js?v=150"></script>
+</body>
+</html>
